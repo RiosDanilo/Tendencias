@@ -1,3 +1,8 @@
+
+
+#Integrantes Danilo Rios, Alejandro Muñoz
+
+
 from cmath import e
 from flask import Flask,jsonify, request
 from config import config
