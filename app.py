@@ -4,6 +4,8 @@
 
 
 from cmath import e
+
+from colorama import Cursor
 from flask import Flask,jsonify, request
 from config import config
 from flaskext.mysql import MySQL
@@ -17,9 +19,9 @@ conexion = MySQL(app)
 @app.route('/madrid')
 def listar_madrid():
     try:
-        madrid=conexion.connection.madrid()
+        cursor=conexion.connection.cursor()
         sql = "SELECT #Jugadores, Nombre, Edad FROM madrid"
-        madrid.execute(sql)
+        cursor.execute(sql)
         datos = madrid.fetchall()
         madrid=[]
         for fila in datos:
@@ -32,9 +34,9 @@ def listar_madrid():
 @app.route('/madrid/<Nombre>')
 def leer_madrid(Nombre):
     try:
-        madrid=conexion.connection.madrid()
+        cursor=conexion.connection.cursor()
         sql="SELECT #Jugadores, Nombre, Edad FROM madrid WHERE Nombre = '{0}'".format(Nombre)
-        madrid.execute(sql)
+        cursor.execute(sql)
         datos=madrid.fetchone()
         if datos!= None:
             madrid = {'#Jugadores':datos[0], 'Nombre':datos[1], 'Edad':datos[2]}
@@ -47,10 +49,10 @@ def leer_madrid(Nombre):
 @app.route('/madrid')#Este es el metodo POST
 def registrar_madrid():
     try:
-        madrid=conexion.connection.madrid()
+        cursor=conexion.connection.cursor()
         sql="""INSERT INTO  madrid (#Jugadores, Nombre, Edad)
          VALUES ('{0}','{1}','{2}')""".format(request.json['#Jugadores'], request.json['Nombre'], request.json['Edad'])
-        madrid.execute(sql)
+        cursor.execute(sql)
         conexion.connection.commit()
         return({'mensaje':"Equipo registrado."})
     except Exception as e:
@@ -59,9 +61,9 @@ def registrar_madrid():
 @app.route('/madrid/<Nombre>')#Este es el metodo PUT
 def modificar_madrid(Nombre):
     try:
-        madrid=conexion.connection.madrid()
+        cursor=conexion.connection.cursor()
         sql="UPDATE madrid SET Nombre = '{0}', Edad = '{1}' WHERE #Jugadores = '{2}'".format(request.json['Nombre'], request.json['Edad'], Nombre)
-        madrid.execute(sql)
+        cursor.execute(sql)
         conexion.connection.commit()
         return({'mensaje':"madrid actualizado."})
     except Exception as e:
@@ -70,9 +72,9 @@ def modificar_madrid(Nombre):
 @app.route('/madrid/<Nombre>')#Este es el metodo DELETE
 def eliminar_madrid(Nombre):
     try:
-        madrid=conexion.connection.madrid()
+        cursor=conexion.connection.cursor()
         sql=" DELETE FROM madrid WHERE #Jugadores = '{0}'".format(Nombre)
-        madrid.execute(sql)
+        cursor.execute(sql)
         conexion.connection.commit()
         return({'mensaje':"madrid eliminado."})
     except Exception as e:
